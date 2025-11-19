@@ -1,6 +1,6 @@
 // import Image from "next/image";
 // import Leaderboard from "../leaderboard/page";
-
+// import Header from "@/app/header/page";
 // export default function CuratorDashboard() {
 //   return (
 //     <main className="min-h-screen bg-white font-sans">
@@ -129,6 +129,9 @@
 //     </main>
 //   );
 // }
+
+
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -141,9 +144,12 @@ export default function CuratorDashboard() {
         <h1 className="text-3xl font-mono">Curator Dashboard</h1>
 
         <div className="flex items-center gap-4">
-          <button className="px-4 py-2 rounded-full bg-black text-white hover:opacity-80">
-            Notifications
-          </button>
+          <nav className="hidden md:flex gap-10 text-gray-700 text-lg">
+          <Link href="/">home</Link>
+          <Link href="/explore">explore</Link>
+          <Link href="/leaderboard">leaderboard</Link>
+          <Link href="/contact">contact</Link>
+        </nav>
 
           <Image
             src="/rewards_snoop.jpg"

@@ -1,72 +1,131 @@
+"use client";
+
 import Image from "next/image";
-import Header from "@/app/header/page";
-import Footer from "@/app/footer/page";
-export default function HomePage() {
+import Link from "next/link";
+
+export default function ReaderDashboard() {
   return (
     <main className="min-h-screen bg-white font-sans">
-      
 
-      <section className="px-6 md:px-16 py-20 flex flex-col md:flex-row items-center justify-between gap-12">
-        
-        {/* LEFT CONTENT */}
-        <div className="max-w-xl">
-          {/* Main Heading */}
-          <h1 className="text-5xl md:text-6xl font-mono leading-tight">
-            Where Every Chapter <br />
-            Unlocks a{" "}
-            <span className="text-yellow-400">New</span> <br />
-            <span className="text-yellow-400">Achievement</span>
-          </h1>
+      {/* HEADER */}
+      <header className="px-6 md:px-16 py-6 flex justify-between items-center border-b">
+        <h1 className="text-3xl font-mono">Reader Dashboard</h1>
 
-          {/* Buttons */}
-          <div className="flex items-center gap-6 mt-10">
-            <a
-              href="/signup"
-              className="px-10 py-3 bg-black text-white rounded-full text-lg hover:opacity-80"
-            >
-              join now
-            </a>
+        <div className="flex items-center gap-4">
+          <nav className="hidden md:flex gap-10 text-gray-700 text-lg">
+          <Link href="/">home</Link>
+          <Link href="/explore">explore</Link>
+          <Link href="/leaderboard">leaderboard</Link>
+          <Link href="/contact">contact</Link>
+        </nav>
 
-            <a
-              href="/explore"
-              className="px-10 py-3 border border-black rounded-full text-lg hover:bg-black hover:text-white transition"
-            >
-              explore challenges
-            </a>
-          </div>
-
-          {/* Stats Section */}
-          <div className="flex gap-16 mt-16 text-center">
-            <div>
-              <h3 className="text-2xl font-medium">23.1K+</h3>
-              <p className="text-sm opacity-70 mt-1">happy readers</p>
-            </div>
-
-            <div>
-              <h3 className="text-2xl font-medium">18.1K+</h3>
-              <p className="text-sm opacity-70 mt-1">books read</p>
-            </div>
-
-            <div>
-              <h3 className="text-2xl font-medium">50+</h3>
-              <p className="text-sm opacity-70 mt-1">fun challenges</p>
-            </div>
-          </div>
-        </div>
-
-        {/* IMAGE RIGHT SIDE */}
-        <div className="flex-shrink-0">
           <Image
-            src="/home.png"
-            alt="Kids reading illustration"
-            width={600}
-            height={600}
-            className="object-contain"
-            priority
+            src="/profile.png"
+            alt="Profile"
+            width={40}
+            height={40}
+            className="rounded-full border"
           />
         </div>
+      </header>
+
+      {/* MAIN SECTION */}
+      <section className="px-6 md:px-16 py-14">
+        
+        <h2 className="text-4xl font-semibold mb-10">
+          Welcome, Reader 👋
+        </h2>
+
+        {/* GRID OF FEATURES */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+
+          {/* EXPLORE BOOKS */}
+          <Link
+            href="/reader/books"
+            className="p-6 rounded-2xl border hover:shadow-xl transition bg-cover bg-center text-white relative overflow-hidden"
+            style={{ backgroundImage: "url('/books_snoop.jpg')" }}
+          >
+            <div className="backdrop-blur-sm bg-black/40 p-4 rounded-xl inline-block">
+              <h3 className="text-xl font-medium">Explore Books</h3>
+              <p className="opacity-90 mt-2 text-sm">
+                Browse books, genres & trending reads.
+              </p>
+            </div>
+          </Link>
+
+          {/* JOIN CHALLENGES */}
+          <Link
+            href="/reader/challenges"
+            className="p-6 rounded-2xl border hover:shadow-xl transition bg-cover bg-center text-white relative overflow-hidden"
+            style={{ backgroundImage: "url('/bg-challenges.jpg')" }}
+          >
+            <div className="backdrop-blur-sm bg-black/40 p-4 rounded-xl inline-block">
+              <h3 className="text-xl font-medium">Join Challenges</h3>
+              <p className="opacity-90 mt-2 text-sm">
+                Participate in fun and engaging reading challenges.
+              </p>
+            </div>
+          </Link>
+
+          {/* READER COMMUNITIES */}
+          <Link
+            href="/reader/communities"
+            className="p-6 rounded-2xl border hover:shadow-xl transition bg-cover bg-center text-white relative overflow-hidden"
+            style={{ backgroundImage: "url('/discover-community.png')" }}
+          >
+            <div className="backdrop-blur-sm bg-black/40 p-4 rounded-xl inline-block">
+              <h3 className="text-xl font-medium">Communities</h3>
+              <p className="opacity-90 mt-2 text-sm">
+                Join discussions, meet other readers & share insights.
+              </p>
+            </div>
+          </Link>
+
+          {/* YOUR PROGRESS */}
+          <Link
+            href="/reader/progress"
+            className="p-6 rounded-2xl border hover:shadow-xl transition bg-cover bg-center text-white relative overflow-hidden"
+            style={{ backgroundImage: "url('/rewards_snoop.jpg')" }}
+          >
+            <div className="backdrop-blur-sm bg-black/40 p-4 rounded-xl inline-block">
+              <h3 className="text-xl font-medium">Your Progress</h3>
+              <p className="opacity-90 mt-2 text-sm">
+                Track your reading stats, streaks & achievements.
+              </p>
+            </div>
+          </Link>
+
+          {/* SUBMIT REVIEWS */}
+          <Link
+            href="/reader/reviews"
+            className="p-6 rounded-2xl border hover:shadow-xl transition bg-cover bg-center text-white relative overflow-hidden"
+            style={{ backgroundImage: "url('/bg-approve.jpg')" }}
+          >
+            <div className="backdrop-blur-sm bg-black/40 p-4 rounded-xl inline-block">
+              <h3 className="text-xl font-medium">Submit Reviews</h3>
+              <p className="opacity-90 mt-2 text-sm">
+                Share your thoughts about the books you read.
+              </p>
+            </div>
+          </Link>
+
+          {/* REWARDS & XP */}
+          <Link
+            href="/reader/rewards"
+            className="p-6 rounded-2xl border hover:shadow-xl transition bg-cover bg-center text-white relative overflow-hidden"
+            style={{ backgroundImage: "url('/bg-analytics.jpg')" }}
+          >
+            <div className="backdrop-blur-sm bg-black/40 p-4 rounded-xl inline-block">
+              <h3 className="text-xl font-medium">Rewards & XP</h3>
+              <p className="opacity-90 mt-2 text-sm">
+                Earn XP, badges and unlock reading achievements.
+              </p>
+            </div>
+          </Link>
+
+        </div>
+
       </section>
-      
     </main>
   );
 }
