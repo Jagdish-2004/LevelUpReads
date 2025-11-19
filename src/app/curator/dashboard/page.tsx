@@ -1,11 +1,23 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import Footer from "@/app/footer/page"
 import Header from "@/app/header/page";
+import Footer from "@/app/footer/page";
+import { addBook } from "@/actions/books"; // Import the Server Action
 
 export default function CuratorDashboard() {
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Wrapper function to handle the Server Action and fix the TypeScript return type error
+  const handleSubmit = async (formData: FormData) => {
+    await addBook(formData);
+    
+    // Clear the form and notify the user
+    formRef.current?.reset();
+    alert("Book added successfully!");
+  };
+
   return (
     <main className="min-h-screen bg-white font-sans">
 
@@ -21,7 +33,7 @@ export default function CuratorDashboard() {
         </div>
 
         <Image
-          src="/snoopy.png"
+          src="/snoopy.png" 
           alt="Snoopy"
           width={180}
           height={180}
@@ -51,6 +63,54 @@ export default function CuratorDashboard() {
         </div>
       </section>
 
+      {/* --- ADD BOOK SECTION --- */}
+      <section className="px-16 mt-14">
+        <h2 className="text-3xl font-mono mb-6">Add to Library</h2>
+        
+        <div className="border border-gray-200 p-8 rounded-3xl shadow-sm max-w-2xl bg-gray-50">
+             
+             {/* Use the wrapper function 'handleSubmit' here, and attach the ref */}
+             <form action={handleSubmit} ref={formRef} className="flex flex-col gap-5">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Book Title</label>
+                  <input 
+                    name="title" 
+                    placeholder="e.g. The Midnight Library" 
+                    className="w-full border border-gray-300 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-black" 
+                    required 
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Author</label>
+                    <input 
+                      name="author" 
+                      placeholder="e.g. Matt Haig" 
+                      className="w-full border border-gray-300 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-black" 
+                      required 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Genre</label>
+                    <input 
+                      name="genre" 
+                      placeholder="e.g. Fiction" 
+                      className="w-full border border-gray-300 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-black" 
+                    />
+                  </div>
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="mt-2 bg-black text-white py-3 rounded-full font-medium hover:opacity-90 transition"
+                >
+                  + Add Book to Library
+                </button>
+             </form>
+        </div>
+      </section>
+
       {/* RECENT BOOKS */}
       <section className="px-16 mt-14 mb-16">
         <h2 className="text-3xl font-mono mb-10">Recently added books</h2>
@@ -63,11 +123,11 @@ export default function CuratorDashboard() {
               className="border p-4 rounded-2xl shadow-sm hover:shadow-lg transition"
             >
               <Image
-                src="/midnightlibrary.jpg"
+                src="/image.png"
                 alt="Book Cover"
                 width={300}
                 height={300}
-                className="rounded-xl mb-4"
+                className="rounded-xl mb-4 w-full object-cover aspect-[3/4]"
               />
 
               <h3 className="text-xl font-medium">The Midnight Library</h3>
