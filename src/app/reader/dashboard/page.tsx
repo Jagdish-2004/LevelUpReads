@@ -2,135 +2,167 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import Leaderboard from "../leaderboard/page";
 
 export default function ReaderDashboard() {
   return (
     <main className="min-h-screen bg-white font-sans">
 
+      {/* NAVBAR */}
+      <nav className="w-full flex justify-between items-center py-4 px-10 border-b">
+        <div className="flex items-center gap-2">
+          <Image src="/logo.png" alt="Logo" width={40} height={40} />
+          <span className="font-mono text-xl">levelupReads</span>
+        </div>
+
+        <ul className="flex gap-10 font-mono text-lg">
+          <li><Link href="/">home</Link></li>
+          <li><Link href="/explore">explore</Link></li>
+          <li><Link href="/community">community</Link></li>
+          <li><Link href="/leaderboard">leaderboard</Link></li>
+        </ul>
+
+        <button className="px-4 py-2 rounded-full bg-black text-white hover:opacity-90">
+          Join now
+        </button>
+      </nav>
+
       {/* HEADER */}
-      <header className="px-6 md:px-16 py-6 flex justify-between items-center border-b">
-        <h1 className="text-3xl font-mono">Reader Dashboard</h1>
+      <section className="px-16 py-10 flex justify-between items-start">
+        <div>
+          <h1 className="text-4xl font-mono mb-2">Reader Dashboard</h1>
+          <p className="text-gray-600 text-lg">
+            Welcome back, Reader! Keep the streak alive.
+          </p>
+        </div>
 
-        <div className="flex items-center gap-4">
-          <nav className="hidden md:flex gap-10 text-gray-700 text-lg">
-          <Link href="/">home</Link>
-          <Link href="/explore">explore</Link>
-          <Link href="/leaderboard">leaderboard</Link>
-          <Link href="/contact">contact</Link>
-        </nav>
+        <Image
+          src="/books_snoop.jpg"
+          alt="Snoopy"
+          width={180}
+          height={180}
+          className="object-contain"
+        />
+      </section>
 
-          <Image
-            src="/profile.png"
-            alt="Profile"
-            width={40}
-            height={40}
-            className="rounded-full border"
+      {/* QUICK STATS */}
+      <section className="px-16 mt-4">
+        <h2 className="text-3xl font-mono mb-6">Quick Stats!</h2>
+
+        <div className="flex gap-20 text-center">
+          <div>
+            <h3 className="text-4xl font-semibold">45</h3>
+            <p className="text-gray-600 mt-1">Books Read</p>
+          </div>
+
+          <div>
+            <h3 className="text-4xl font-semibold">25</h3>
+            <p className="text-gray-600 mt-1">Challenges done</p>
+          </div>
+
+          <div>
+            <h3 className="text-4xl font-semibold">2K+</h3>
+            <p className="text-gray-600 mt-1">Followers</p>
+          </div>
+        </div>
+      </section>
+
+      {/* XP LEVEL */}
+      <section className="px-16 mt-10">
+        <h2 className="text-2xl font-mono mb-4">XP Level</h2>
+
+        {/* Progress bar wrapper */}
+        <div className="w-full h-4 bg-gray-200 rounded-full">
+          <div
+            className="h-4 bg-black rounded-full"
+            style={{ width: "70%" }} // level progress
           />
         </div>
-      </header>
 
-      {/* MAIN SECTION */}
-      <section className="px-6 md:px-16 py-14">
-        
-        <h2 className="text-4xl font-semibold mb-10">
-          Welcome, Reader 👋
-        </h2>
-
-        {/* GRID OF FEATURES */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-
-          {/* EXPLORE BOOKS */}
-          <Link
-            href="/reader/books"
-            className="p-6 rounded-2xl border hover:shadow-xl transition bg-cover bg-center text-white relative overflow-hidden"
-            style={{ backgroundImage: "url('/books_snoop.jpg')" }}
-          >
-            <div className="backdrop-blur-sm bg-black/40 p-4 rounded-xl inline-block">
-              <h3 className="text-xl font-medium">Explore Books</h3>
-              <p className="opacity-90 mt-2 text-sm">
-                Browse books, genres & trending reads.
-              </p>
-            </div>
-          </Link>
-
-          {/* JOIN CHALLENGES */}
-          <Link
-            href="/reader/challenges"
-            className="p-6 rounded-2xl border hover:shadow-xl transition bg-cover bg-center text-white relative overflow-hidden"
-            style={{ backgroundImage: "url('/bg-challenges.jpg')" }}
-          >
-            <div className="backdrop-blur-sm bg-black/40 p-4 rounded-xl inline-block">
-              <h3 className="text-xl font-medium">Join Challenges</h3>
-              <p className="opacity-90 mt-2 text-sm">
-                Participate in fun and engaging reading challenges.
-              </p>
-            </div>
-          </Link>
-
-          {/* READER COMMUNITIES */}
-          <Link
-            href="/reader/communities"
-            className="p-6 rounded-2xl border hover:shadow-xl transition bg-cover bg-center text-white relative overflow-hidden"
-            style={{ backgroundImage: "url('/discover-community.png')" }}
-          >
-            <div className="backdrop-blur-sm bg-black/40 p-4 rounded-xl inline-block">
-              <h3 className="text-xl font-medium">Communities</h3>
-              <p className="opacity-90 mt-2 text-sm">
-                Join discussions, meet other readers & share insights.
-              </p>
-            </div>
-          </Link>
-
-          {/* YOUR PROGRESS */}
-          <Link
-            href="/reader/progress"
-            className="p-6 rounded-2xl border hover:shadow-xl transition bg-cover bg-center text-white relative overflow-hidden"
-            style={{ backgroundImage: "url('/rewards_snoop.jpg')" }}
-          >
-            <div className="backdrop-blur-sm bg-black/40 p-4 rounded-xl inline-block">
-              <h3 className="text-xl font-medium">Your Progress</h3>
-              <p className="opacity-90 mt-2 text-sm">
-                Track your reading stats, streaks & achievements.
-              </p>
-            </div>
-          </Link>
-
-          {/* SUBMIT REVIEWS */}
-          <Link
-            href="/reader/reviews"
-            className="p-6 rounded-2xl border hover:shadow-xl transition bg-cover bg-center text-white relative overflow-hidden"
-            style={{ backgroundImage: "url('/bg-approve.jpg')" }}
-          >
-            <div className="backdrop-blur-sm bg-black/40 p-4 rounded-xl inline-block">
-              <h3 className="text-xl font-medium">Submit Reviews</h3>
-              <p className="opacity-90 mt-2 text-sm">
-                Share your thoughts about the books you read.
-              </p>
-            </div>
-          </Link>
-
-          {/* REWARDS & XP */}
-          <Link
-            href="/reader/rewards"
-            className="p-6 rounded-2xl border hover:shadow-xl transition bg-cover bg-center text-white relative overflow-hidden"
-            style={{ backgroundImage: "url('/bg-analytics.jpg')" }}
-          >
-            <div className="backdrop-blur-sm bg-black/40 p-4 rounded-xl inline-block">
-              <h3 className="text-xl font-medium">Rewards & XP</h3>
-              <p className="opacity-90 mt-2 text-sm">
-                Earn XP, badges and unlock reading achievements.
-              </p>
-            </div>
-          </Link>
-
-        </div>
-        {/* LEADERBOARD SECTION */}
-        <div className="flex justify-center mt-16">
-          <Leaderboard />
-        </div>
-
+        <p className="mt-2 text-gray-700 font-mono">level 7</p>
       </section>
+
+      {/* CONTINUE READING */}
+      <section className="px-16 mt-14 mb-16">
+        <h2 className="text-3xl font-mono mb-10">Continue Reading..</h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+
+          {[1, 2, 3].map((num) => (
+            <div
+              key={num}
+              className="border p-4 rounded-2xl shadow-sm hover:shadow-lg transition"
+            >
+              <Image
+                src="/image.png"
+                alt="Book Cover"
+                width={300}
+                height={300}
+                className="rounded-xl mb-4"
+              />
+
+              <h3 className="text-xl font-medium">The Midnight Library</h3>
+              <p className="text-gray-700">Matt Haig</p>
+              <p className="text-gray-500 text-sm">Fiction</p>
+
+              <button className="mt-4 w-full py-2 bg-black text-white rounded-full hover:opacity-90">
+                Read more →
+              </button>
+            </div>
+          ))}
+
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="w-full bg-gray-100 py-10 px-16 border-t">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+
+          {/* LOGO */}
+          <div>
+            <Image src="/logo.png" alt="Logo" width={40} height={40} className="mb-3" />
+            <p className="text-gray-600 text-sm">
+              Track progress, earn badges, and inspire reading friends!
+            </p>
+          </div>
+
+          {/* EXPLORE */}
+          <div>
+            <h4 className="font-semibold mb-2">Explore</h4>
+            <ul className="text-gray-600 text-sm space-y-1">
+              <li>browse books</li>
+              <li>earn challenges</li>
+              <li>badges and rewards</li>
+              <li>genre guide</li>
+            </ul>
+          </div>
+
+          {/* HELP */}
+          <div>
+            <h4 className="font-semibold mb-2">Need Help?</h4>
+            <ul className="text-gray-600 text-sm space-y-1">
+              <li>help center</li>
+              <li>start reading</li>
+              <li>reading tips</li>
+              <li>user guide</li>
+            </ul>
+          </div>
+
+          {/* CONTACT */}
+          <div>
+            <h4 className="font-semibold mb-2">Call us</h4>
+            <ul className="text-gray-600 text-sm space-y-1">
+              <li>Mumbai</li>
+              <li>+91 909 999 99</li>
+              <li>levelupreads@gmail.com</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <p className="text-center text-gray-500 text-sm mt-8">
+          © 2025 LevelupBooks. Made with love for readers everywhere.
+        </p>
+      </footer>
     </main>
   );
 }
