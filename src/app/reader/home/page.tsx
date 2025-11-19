@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import Leaderboard from "../leaderboard/page";
 
 export default function ReaderDashboard() {
   return (
@@ -123,6 +124,10 @@ export default function ReaderDashboard() {
             </div>
           </Link>
 
+        </div>
+        {/* LEADERBOARD SECTION */}
+        <div className="flex justify-center mt-16">
+          <Leaderboard />
         </div>
 
       </section>

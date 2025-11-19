@@ -28,7 +28,7 @@ export default function Header() {
 
         {/* RIGHT — JOIN BUTTON */}
         <Link
-          href="/signup"
+          href="/roleselection"
           className="px-6 py-2 bg-black text-white rounded-full text-lg hover:opacity-80"
         >
           join now

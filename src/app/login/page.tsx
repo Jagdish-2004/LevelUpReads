@@ -22,7 +22,7 @@ export default function LoginPage() {
       {/* LEFT — FORM */}
       <div className="flex flex-col justify-center w-full md:w-1/2 px-10 md:px-20 py-10">
 
-        <h1 className="text-4xl font-medium mb-10 text-center mt-10 md:mt-0 w-full text-center">
+        <h1 className="text-4xl font-medium mb-10 text-center md:text-left">
           Log in
         </h1>
 
