@@ -3,10 +3,38 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { authClient } from '@/lib/auth-client' // Import auth client
 
 export default function LoginPage() {
+  const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const [showPassword, setShowPassword] = useState(false);
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      alert("Please enter both email and password")
+      return
+    }
+
+    setLoading(true)
+
+    await authClient.signIn.email({
+      email,
+      password
+    }, {
+      onSuccess: async () => {
+        // Redirect to curator dashboard on success
+        router.push('/curator/dashboard')
+      },
+      onError: (ctx) => {
+         alert(ctx.error.message)
+         setLoading(false)
+      }
+    })
+  }
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-white">
@@ -49,6 +77,8 @@ export default function LoginPage() {
           <label className="block text-gray-700 mb-1">Username</label>
           <input
             type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-gray-500 focus:outline-none mb-4"
           />
         </div>
@@ -69,6 +99,8 @@ export default function LoginPage() {
 
           <input
             type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-gray-500 focus:outline-none"
           />
 
@@ -84,8 +116,12 @@ export default function LoginPage() {
         </div>
 
         {/* Login Button */}
-        <button className="w-full max-w-md mx-auto md:mx-0 bg-black text-white py-3 rounded-full hover:bg-gray-800 transition mt-6">
-          Log in
+        <button 
+          onClick={handleSignIn}
+          disabled={loading}
+          className="w-full max-w-md mx-auto md:mx-0 bg-black text-white py-3 rounded-full hover:bg-gray-800 transition mt-6 disabled:opacity-50"
+        >
+          {loading ? "Logging in..." : "Log in"}
         </button>
 
         {/* Sign Up */}
@@ -98,19 +134,17 @@ export default function LoginPage() {
       </div>
 
       {/* RIGHT — IMAGE SECTION */}
-<div className="hidden md:flex w-full md:w-1/2 justify-center items-center bg-gray-100 p-6">
-  <div className="relative w-full max-w-md aspect-square rounded-3xl overflow-hidden shadow-lg">
-    <Image
-      src="/Login_image.jpg"
-      alt="Reading Illustration"
-      fill
-      className="object-cover rounded-3xl"
-      sizes="(max-width: 768px) 100vw, 50vw"
-    />
-  </div>
-</div>
-
-
+      <div className="hidden md:flex w-full md:w-1/2 justify-center items-center bg-gray-100 p-6">
+        <div className="relative w-full max-w-md aspect-square rounded-3xl overflow-hidden shadow-lg">
+          <Image
+            src="/Login_image.jpg"
+            alt="Reading Illustration"
+            fill
+            className="object-cover rounded-3xl"
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        </div>
+      </div>
     </div>
   )
 }

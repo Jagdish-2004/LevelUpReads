@@ -4,16 +4,17 @@ import { useRef } from "react";
 import Image from "next/image";
 import Header from "@/app/header/page";
 import Footer from "@/app/footer/page";
-import { addBook } from "@/actions/books"; // Import the Server Action
+import { addBook } from "@/actions/books"; 
+import { authClient } from "@/lib/auth-client"; // Import auth client
 
 export default function CuratorDashboard() {
   const formRef = useRef<HTMLFormElement>(null);
 
-  // Wrapper function to handle the Server Action and fix the TypeScript return type error
+  // Fetch the user session to get the name
+  const { data: session } = authClient.useSession();
+
   const handleSubmit = async (formData: FormData) => {
     await addBook(formData);
-    
-    // Clear the form and notify the user
     formRef.current?.reset();
     alert("Book added successfully!");
   };
@@ -28,7 +29,8 @@ export default function CuratorDashboard() {
         <div>
           <h1 className="text-4xl font-mono mb-2">Curator Dashboard</h1>
           <p className="text-gray-600 text-lg">
-            Welcome back, Curator! Your knowledge guides the community.
+            {/* Dynamically display the user name */}
+            Welcome back, <span className="font-semibold">{session?.user?.name || "Curator"}</span>! Your knowledge guides the community.
           </p>
         </div>
 
@@ -69,7 +71,6 @@ export default function CuratorDashboard() {
         
         <div className="border border-gray-200 p-8 rounded-3xl shadow-sm max-w-2xl bg-gray-50">
              
-             {/* Use the wrapper function 'handleSubmit' here, and attach the ref */}
              <form action={handleSubmit} ref={formRef} className="flex flex-col gap-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Book Title</label>
@@ -116,7 +117,6 @@ export default function CuratorDashboard() {
         <h2 className="text-3xl font-mono mb-10">Recently added books</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-
           {[1, 2, 3].map((num) => (
             <div
               key={num}
@@ -139,7 +139,6 @@ export default function CuratorDashboard() {
               </button>
             </div>
           ))}
-
         </div>
       </section>
 
