@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import Header from "@/app/header/page";
+import Header from "@/app/reader/header/page";
 import Footer from "@/app/footer/page"
 
 const categories = ["All", "Mystery", "Fantasy", "Thriller"];

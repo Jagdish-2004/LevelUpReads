@@ -8,7 +8,10 @@ export const user = pgTable("user", {
   image: text("image"),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
   updatedAt: timestamp("updatedAt").notNull().defaultNow(),
-  role: text("role").$type<"admin" | "reader" | "curator">().default("reader"), // Added Role
+  role: text("role").$type<"admin" | "reader" | "curator">().default("reader"),
+  // NEW FIELDS FOR GAMIFICATION
+  xp: integer("xp").default(0).notNull(),
+  booksRead: integer("booksRead").default(0).notNull(),
 });
 
 export const session = pgTable("session", {
@@ -47,7 +50,6 @@ export const verification = pgTable("verification", {
   updatedAt: timestamp("updatedAt"),
 });
 
-// 1. Books Table (Curators add these)
 export const book = pgTable("book", {
   id: text("id").primaryKey(),
   title: text("title").notNull(),
@@ -55,25 +57,23 @@ export const book = pgTable("book", {
   genre: text("genre"),
   coverUrl: text("coverUrl"),
   description: text("description"),
-  xpValue: integer("xpValue").default(10), // XP given for reading this
+  xpValue: integer("xpValue").default(10),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
 });
 
-// 2. User Books (Readers tracking progress)
 export const userBook = pgTable("user_book", {
   id: text("id").primaryKey(),
   userId: text("userId").notNull().references(() => user.id),
   bookId: text("bookId").notNull().references(() => book.id),
-  status: text("status").notNull().default("reading"), // 'reading', 'completed'
-  progress: integer("progress").default(0), // e.g., page number
+  status: text("status").notNull().default("reading"), 
+  progress: integer("progress").default(0),
   completedAt: timestamp("completedAt"),
 });
 
-// 3. Challenges (Optional: Curators create, Readers join)
 export const challenge = pgTable("challenge", {
   id: text("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description"),
-  goal: integer("goal").notNull(), // e.g., "Read 5 books"
+  goal: integer("goal").notNull(),
   rewardXp: integer("rewardXp").notNull(),
 });

@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
-import Header from "@/app/header/page";
+import Header from "@/app/curator/header/page";
 import Footer from "@/app/footer/page"
 
 export default function ExploreBooksCurator() {

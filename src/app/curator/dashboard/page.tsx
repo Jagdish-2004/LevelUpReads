@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import Header from "@/app/header/page";
+import Header from "@/app/curator/header/page";
 import Footer from "@/app/footer/page";
 import { addBook } from "@/actions/books"; 
 import { authClient } from "@/lib/auth-client"; // Import auth client

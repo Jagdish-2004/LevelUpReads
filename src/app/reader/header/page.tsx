@@ -20,10 +20,10 @@ export default function Header() {
 
         {/* CENTER — NAV */}
         <nav className="hidden md:flex gap-10 text-gray-700 text-lg">
-          <Link href="/">home</Link>
-          <Link href="/explore">explore</Link>
-          <Link href="/leaderboard">leaderboard</Link>
-          <Link href="/contact">contact</Link>
+          <Link href="/reader/home">dashboard</Link>
+          <Link href="/reader/explore">explore</Link>
+          <Link href="/reader/leaderboard">leaderboard</Link>
+          <Link href="#contact">contact</Link>
         </nav>
 
         {/* RIGHT — JOIN BUTTON */}
