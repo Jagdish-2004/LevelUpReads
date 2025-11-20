@@ -10,13 +10,20 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  // 1. Add the socialProviders block here
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    }, 
+  },
   user: {
     additionalFields: {
       role: {
         type: "string",
         required: false,
         defaultValue: "reader",
-        input: true, // allows passing role during sign-up
+        input: true, 
       },
     },
   },
