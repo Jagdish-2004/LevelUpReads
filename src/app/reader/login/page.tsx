@@ -30,10 +30,10 @@ export default function LoginPage() {
         const session = await authClient.getSession();
         
         if (session.data?.user.role === 'curator') {
-           router.push('/curator/dashboard')
+           router.push('/curator/home')
         } else {
            // Default to reader dashboard for 'reader' or 'admin' roles
-           router.push('/reader/dashboard')
+           router.push('/reader/home')
         }
       },
       onError: (ctx) => {
@@ -56,7 +56,9 @@ export default function LoginPage() {
       {/* HEADER — always visible */}
       <header className="p-4 flex items-center space-x-2 absolute top-0 left-0 z-10">
         <img src="/logo.png" alt="LevelupReads Logo" className="h-6 w-6" />
+        <Link href = '/home'>
         <span className="text-xl font-semibold">levelupReads</span>
+        </Link>
       </header>
 
       {/* LEFT — FORM SECTION */}

@@ -42,7 +42,9 @@ export default function LoginPage() {
       {/* HEADER — always visible */}
       <header className="p-4 flex items-center space-x-2 absolute top-0 left-0">
         <img src="/logo.png" alt="LevelupReads Logo" className="h-6 w-6" />
+        <Link href='/home'>
         <span className="text-xl font-semibold">levelupReads</span>
+        </Link>
       </header>
 
       {/* LEFT — FORM SECTION */}

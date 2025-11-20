@@ -22,7 +22,6 @@ export default function CuratorDashboard() {
   return (
     <main className="min-h-screen bg-white font-sans">
 
-      <Header />
 
       {/* HEADER */}
       <section className="px-16 py-10 flex justify-between items-start">
@@ -142,7 +141,6 @@ export default function CuratorDashboard() {
         </div>
       </section>
 
-      <Footer />
     </main>
   );
 }

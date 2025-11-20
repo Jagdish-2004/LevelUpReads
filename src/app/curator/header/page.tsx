@@ -26,15 +26,15 @@ export default function Header() {
 
         {/* RIGHT — PROFILE CIRCLE */}
         <a href="#profile" className="w-11 h-11 rounded-full overflow-hidden border border-gray-300 flex items-center justify-center">
-          {/* Replace with actual profile image */}
-          <Image
-            src="/profile-placeholder.png"
-            alt="Profile"
-            width={44}
-            height={44}
-            className="object-cover"
-          />
-        </a>
+                      {/* Replace with actual profile image */}
+                      <Image
+                        src="/profile.svg"
+                        alt="Profile"
+                        width={44}
+                        height={44}
+                        className="object-cover"
+                      />
+                    </a>
 
       </div>
     </header>

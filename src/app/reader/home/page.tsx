@@ -1,7 +1,7 @@
 import Header from "@/app/reader/header/page";
 import Image from "next/image";
 import Footer from "@/app/footer/page"
-import HomePage from "@/app/reader/home/page";
+import Dashboard from "@/app/reader/dashboard/page";
 import ExplorePage from "../explore/page";
 import LeaderboardPage from "../leaderboard/page";
 // import { Contact } from "lucide-react";
@@ -10,9 +10,9 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white font-sans">
       <Header />
-      <HomePage />
+      <Dashboard />
       {/* <LeaderboardPage/> */}
-      <section id ="contact"><Contact /></section>
+      <section id="contact"><Contact/></section>
       <Footer />
     </main>
   );

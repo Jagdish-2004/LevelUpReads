@@ -11,7 +11,7 @@ const books = Array(9).fill({
   title: "The Midnight Library",
   author: "Matt Haig",
   genre: "Fiction",
-  img: "/midnight_library.jpg",
+  img: "/image.png",
 });
 
 export default function ExploreBooks() {

@@ -27,12 +27,22 @@ export default function Header() {
         </nav>
 
         {/* RIGHT — JOIN BUTTON */}
-        <Link
+        {/* <Link
           href="/roleselection"
           className="px-6 py-2 bg-black text-white rounded-full text-lg hover:opacity-80"
         >
           join now
-        </Link>
+        </Link> */}
+        <a href="#profile" className="w-11 h-11 rounded-full overflow-hidden border border-gray-300 flex items-center justify-center">
+              {/* Replace with actual profile image */}
+              <Image
+                src="/profile.svg"
+                alt="Profile"
+                width={44}
+                height={44}
+                className="object-cover"
+              />
+            </a>
 
       </div>
     </header>

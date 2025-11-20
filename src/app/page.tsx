@@ -13,7 +13,7 @@ export default function Home() {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
 
         {/* LEFT — LOGO */}
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/home" className="flex items-center gap-2">
           <Image
             src="/logo.png"     // <-- make sure this name matches the file
             alt="LevelupReads Logo"
