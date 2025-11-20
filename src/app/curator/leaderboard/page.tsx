@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { user } from "@/db/schema";
 import { desc } from "drizzle-orm";
-import Header from "@/app/reader/header/page";
+import Header from "@/app/curator/header/page";
 import Footer from "@/app/footer/page";
 import Image from "next/image";
 
