@@ -5,6 +5,7 @@ export interface IQuizQuestion {
   options: string[];
   correctIndex: number;
   explanation?: string;
+  difficulty?: "easy" | "medium" | "hard";
 }
 
 export interface IBookQuiz extends Document {
@@ -19,6 +20,7 @@ const QuizQuestionSchema = new Schema<IQuizQuestion>(
     options: [{ type: String }],
     correctIndex: { type: Number, required: true },
     explanation: { type: String },
+    difficulty: { type: String, enum: ["easy", "medium", "hard"] },
   },
   { _id: false }
 );

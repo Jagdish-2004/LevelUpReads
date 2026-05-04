@@ -1,9 +1,13 @@
-feat: production-grade favourites system with write-back caching
+feat: expert educator quiz prompt, write-back favourites caching, and production fixes
 
-- Dedicated Favourite MongoDB model (one doc per user, unique userId index)
-- Redis write-back cache: update Redis first, return immediately
-- BullMQ write-behind worker: deduplicated 3s delayed DB sync per user  
+- Upgraded quiz prompt to expert educator format with difficulty levels (easy/medium/hard)
+- Added normaliseQuestions() transformer for new {A,B,C,D} options format
+- BookQuiz model: added difficulty field to IQuizQuestion
+- Fixed .env.local trailing whitespace on MONGODB_URI and REDIS_URL
+- API key trimming and model fallback chain (gemini-2.0-flash -> 1.5-flash -> pro)
+- Static fallback quiz so app never crashes when Gemini is unavailable
+- Production-grade favourites: Favourite MongoDB model, Redis write-back cache
+- BullMQ write-behind worker with 3s delay and deduplication per user
 - Split API routes: GET /api/favorites, POST /api/favorites/add, DELETE /api/favorites/remove
-- favouriteCache.ts helper: getCachedIds, setCachedIds, add, remove, invalidate
-- FavouritesSection, BookCard, BookDetails all use new endpoints
-- Favourites persist across reloads via MongoDB, served fast via Redis
+- FavouritesSection, BookCard, BookDetails all wired to new endpoints
+- Favourites persist across reloads via MongoDB + Redis cache layer
