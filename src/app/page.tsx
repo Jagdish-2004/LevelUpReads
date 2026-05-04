@@ -2,8 +2,8 @@
 import Image from "next/image";
 import Footer from "@/app/footer/page"
 import HomePage from "@/app/home/page";
-import ExplorePage from "./reader/explore/page";
-import LeaderboardPage from "./leaderboard/page";
+import ExplorePage from "@/app/reader/explore/page";
+import LeaderboardPage from "@/app/leaderboard/page";
 import Link from "next/link"
 
 export default function Home() {
@@ -26,8 +26,8 @@ export default function Home() {
 
         {/* RIGHT — JOIN BUTTON */}
         <Link
-          href="/roleselection"
-          className="px-6 py-2 bg-black text-white rounded-full text-lg hover:opacity-80"
+          href="/"
+          className="px-6 py-2 bg-black text-white rounded-full text-lg hover:opacity-80 transition"
         >
           join now
         </Link>

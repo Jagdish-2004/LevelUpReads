@@ -1,11 +1,13 @@
 import Image from "next/image";
+import Header from "@/app/reader/header/page";
 
 export default function ContactPage() {
   return (
-    <div className="w-full flex flex-col items-center pt-16">
+    <div className="w-full flex flex-col items-center">
 
+      <Header />
       {/* Heading */}
-      <h1 className="text-3xl font-light tracking-wide mb-14">
+      <h1 className="text-3xl font-light tracking-wide mb-14 pt-10">
         stay connected!
       </h1>
 
@@ -56,7 +58,7 @@ export default function ContactPage() {
           {/* Bird */}
           <div className="relative">
             <Image
-              src="/small-bird.png"
+              src="/small_bird.png"
               alt="small bird"
               width={55}
               height={55}

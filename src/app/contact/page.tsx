@@ -56,7 +56,7 @@ export default function ContactPage() {
           {/* Bird */}
           <div className="relative">
             <Image
-              src="/small-bird.png"
+              src="/small_bird.png"
               alt="small bird"
               width={55}
               height={55}

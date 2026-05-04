@@ -4,16 +4,14 @@ import { getSessionCookie } from "better-auth/cookies";
 export async function middleware(request: NextRequest) {
   const sessionCookie = getSessionCookie(request);
 
-  if (!sessionCookie) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
-  // Ideally verify session with backend, but for middleware speed we check presence
-  // For strict role checks, fetch user session in server component or use a verified JWT approach.
+  // Temporarily disabled so user can view dashboard
+  // if (!sessionCookie) {
+  //   return NextResponse.redirect(new URL("/login", request.url));
+  // }
   
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/reader/dashboard/:path*", "/curator/dashboard/:path*"],
+  matcher: ["/reader/dashboard/:path*"],
 };

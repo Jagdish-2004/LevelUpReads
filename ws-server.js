@@ -1,41 +1,51 @@
-// ws-server.js
 const WebSocket = require("ws");
+const Redis = require("ioredis");
+require("dotenv").config({ path: ".env.local" });
 
 const wss = new WebSocket.Server({ port: 8080 });
-
 console.log("🔌 WebSocket Server running at ws://localhost:8080");
 
-let xpBase = 12000;
+// Connect to Redis
+const redisSubscriber = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
+const redisClient = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
 
-// Dummy initial data
-let leaderboard = [
-  { id: 1, name: "Kirtam Chetiala", books: 58, xp: 12740 },
-  { id: 2, name: "Jagdish Choudhary", books: 39, xp: 11200 },
-  { id: 3, name: "Prakriti Gupta", books: 28, xp: 10350 },
-  { id: 4, name: "Atharv Arekar", books: 18, xp: 9800 },
-  { id: 5, name: "Alan Saldanha", books: 13, xp: 9200 },
-];
+const CHANNEL = "leaderboard-updates";
 
-// Send updates every 3 seconds
-setInterval(() => {
-  // Simulate XP gaining
-  leaderboard = leaderboard.map((u) => ({
-    ...u,
-    xp: u.xp + Math.floor(Math.random() * 40),
-  }));
+redisSubscriber.subscribe(CHANNEL, (err, count) => {
+  if (err) {
+    console.error("Failed to subscribe to channel", err);
+  } else {
+    console.log(`Subscribed to ${count} channels. Listening for ${CHANNEL}...`);
+  }
+});
 
-  // Sort by XP descending
-  leaderboard.sort((a, b) => b.xp - a.xp);
+// Broadcast to all connected clients when a message is received from Redis
+redisSubscriber.on("message", (channel, message) => {
+  if (channel === CHANNEL) {
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    });
+  }
+});
 
-  const payload = JSON.stringify({
-    type: "leaderboard-update",
-    leaderboard,
-  });
-
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(payload);
+// Periodic fallback / init logic: Send the current cached leaderboard on connection
+wss.on("connection", async (ws) => {
+  console.log("New client connected!");
+  try {
+    const cachedLeaderboard = await redisClient.get("leaderboard:top10");
+    if (cachedLeaderboard) {
+      ws.send(JSON.stringify({
+        type: "leaderboard-update",
+        leaderboard: JSON.parse(cachedLeaderboard),
+      }));
     }
+  } catch (err) {
+    console.error("Error fetching initial leaderboard", err);
+  }
+  
+  ws.on("close", () => {
+    console.log("Client disconnected");
   });
-
-}, 3000);
+});

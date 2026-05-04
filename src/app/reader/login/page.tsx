@@ -44,10 +44,18 @@ export default function LoginPage() {
   }
 
   const handleSocialLogin = async (provider: 'google' | 'facebook') => {
-    await authClient.signIn.social({
-      provider,
-      callbackURL: '/reader/dashboard' // Default redirect, middleware can handle role checks if needed
-    })
+    try {
+      const res = await authClient.signIn.social({
+        provider,
+        callbackURL: '/reader/dashboard'
+      });
+      if (res.error) {
+        alert(res.error.message || `Failed to sign in with ${provider}`);
+      }
+    } catch (err: any) {
+      alert("Social login failed. Ensure GOOGLE_CLIENT_ID is set in .env.local!");
+      console.error(err);
+    }
   }
 
   return (

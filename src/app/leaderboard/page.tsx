@@ -88,7 +88,7 @@ export default function LeaderboardPage() {
 
         {/* 📌 RIGHT: Image */}
         <img
-          src="/images/leaderboard-right.png"
+          src="/rewards_snoop.jpg"
           alt="Leaderboard Graphic"
           className="w-[320px] h-[420px] object-cover rounded-3xl shadow-md"
         />

@@ -12,8 +12,6 @@ export default function SignupPage() {
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  // 1. Add state for the role, defaulting to 'reader'
-  const [role, setRole] = useState<'reader' | 'curator'>('reader')
   const [loading, setLoading] = useState(false)
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -24,16 +22,10 @@ export default function SignupPage() {
       email,
       password,
       name: `${firstName} ${lastName}`.trim(),
-      // 2. Pass the selected role state instead of the hardcoded string
-      role: role, 
+      role: 'reader', 
     }, {
       onSuccess: () => {
-        // 3. Redirect based on the role they just signed up with
-        if (role === 'curator') {
-            router.push('/curator/dashboard')
-        } else {
-            router.push('/roleselection') // or directly to /reader/dashboard
-        }
+        router.push('/reader/dashboard')
       },
       onError: (ctx) => {
         alert(ctx.error.message)
@@ -100,34 +92,7 @@ export default function SignupPage() {
             required
           />
 
-          {/* 4. Role Selection UI */}
-          <div className="w-full">
-            <label className="block text-gray-700 text-sm mb-2">I want to sign up as a:</label>
-            <div className="flex gap-4">
-                <button
-                    type="button"
-                    onClick={() => setRole('reader')}
-                    className={`flex-1 py-3 rounded-xl border text-center transition ${
-                        role === 'reader' 
-                        ? 'bg-black text-white border-black' 
-                        : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
-                    }`}
-                >
-                    Reader
-                </button>
-                <button
-                    type="button"
-                    onClick={() => setRole('curator')}
-                    className={`flex-1 py-3 rounded-xl border text-center transition ${
-                        role === 'curator' 
-                        ? 'bg-black text-white border-black' 
-                        : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
-                    }`}
-                >
-                    Curator
-                </button>
-            </div>
-          </div>
+
 
           <p className="text-gray-500 text-sm">
             Use 8 or more characters with a mix of letters, numbers & symbols
