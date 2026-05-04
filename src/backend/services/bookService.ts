@@ -189,7 +189,10 @@ export class BookService {
     const cached = await cacheManager.get<IBook>(cacheKey);
     if (cached) return cached;
 
-    const book = (await Book.findById(id).lean()) || (await Book.findOne({ sourceId: id }).lean());
+    const isObjectId = /^[a-f\d]{24}$/i.test(id);
+    const book = isObjectId
+      ? ((await Book.findById(id).lean()) ?? (await Book.findOne({ sourceId: id }).lean()))
+      : (await Book.findOne({ sourceId: id }).lean());
     if (book) {
       await cacheManager.set(cacheKey, book, 300);
       return book;

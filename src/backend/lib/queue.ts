@@ -88,3 +88,47 @@ export async function addRewardJob(userId: string, data: Record<string, unknown>
 }
 
 export { connection as redisConnection };
+
+// ── Favourite sync queue (write-back / write-behind) ─────────────────────────
+export const favouriteSyncQueue = new Queue("favourite-sync", {
+  connection,
+  defaultJobOptions: {
+    removeOnComplete: { count: 50 },
+    removeOnFail: { count: 100 },
+    attempts: 3,
+    backoff: { type: "exponential" as const, delay: 1000 },
+  },
+});
+
+/**
+ * Queue a write-back DB sync for a user's favourites.
+ *
+ * Uses a deterministic jobId = "fsync:{userId}" so that rapid
+ * add/remove clicks collapse into a single DB write.
+ * The 3-second delay lets the user finish interacting before we write.
+ *
+ * @param userId  user email
+ * @param bookIds current favourite bookIds (already written to Redis)
+ */
+export async function addFavouriteSyncJob(userId: string, bookIds: string[]): Promise<void> {
+  const jobId = `fsync:${userId}`;
+  try {
+    // Remove any existing pending/delayed sync so we only keep the latest snapshot
+    const existing = await favouriteSyncQueue.getJob(jobId);
+    if (existing) {
+      const state = await existing.getState();
+      if (state === "delayed" || state === "waiting") {
+        await existing.remove();
+      }
+    }
+    await favouriteSyncQueue.add(
+      "sync-favourites",
+      { userId, bookIds },
+      { jobId, delay: 3000 } // 3 s write-behind window
+    );
+    log.debug({ jobId, count: bookIds.length }, "Favourite sync job queued");
+  } catch (err) {
+    log.error({ err, userId }, "Failed to queue favourite sync job");
+  }
+}
+

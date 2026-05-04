@@ -9,6 +9,7 @@ export interface IUser extends Document {
   xp: number;
   booksRead: number;
   readBookIds: string[];
+  favouriteBookIds: string[];
   phone?: string;
   dob?: string;
   phoneVerified: boolean;
@@ -30,6 +31,7 @@ const UserSchema: Schema = new Schema(
     xp: { type: Number, default: 0 },
     booksRead: { type: Number, default: 0 },
     readBookIds: [{ type: String }],
+    favouriteBookIds: [{ type: String }],
     phone: { type: String },
     dob: { type: String },
     phoneVerified: { type: Boolean, default: false },

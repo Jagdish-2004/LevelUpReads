@@ -1,9 +1,13 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 
 interface BookDetailsProps {
   book: {
     _id?: string;
     id?: string;
+    sourceId?: string;
     title: string;
     authors: string[];
     description: string;
@@ -13,12 +17,74 @@ interface BookDetailsProps {
     ratingsCount?: number;
     xpValue?: number;
   };
+  isFavourited?: boolean;
 }
 
-export default function BookDetails({ book }: BookDetailsProps) {
+export default function BookDetails({ book, isFavourited: initialFav = false }: BookDetailsProps) {
+  const [isFav, setIsFav] = useState(initialFav);
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
+  // Use sourceId first (Open Library ID), fall back to _id
+  const bookId = book.sourceId || book._id || book.id || "";
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const handleFavourite = async () => {
+    setLoading(true);
+    try {
+      if (isFav) {
+        const res = await fetch("/api/favorites/remove", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bookId }),
+        });
+        if (res.status === 401) { showToast("Please log in to manage favourites."); return; }
+        if (res.ok) {
+          setIsFav(false);
+          showToast("💔 Removed from favourites.");
+          window.dispatchEvent(new Event("favouriteChanged"));
+        } else {
+          const d = await res.json();
+          showToast(d.error || "Something went wrong.");
+        }
+      } else {
+        const res = await fetch("/api/favorites/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bookId }),
+        });
+        if (res.status === 401) { showToast("Please log in to save favourites."); return; }
+        if (res.ok) {
+          setIsFav(true);
+          showToast("❤️ Added to favourites!");
+          window.dispatchEvent(new Event("favouriteChanged"));
+        } else {
+          const d = await res.json();
+          showToast(d.error || "Something went wrong.");
+        }
+      }
+    } catch {
+      showToast("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col md:flex-row gap-8 items-start bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-5xl mx-auto w-full mt-10">
-      {/* LEFT SIDE: Image */}
+    <div className="flex flex-col md:flex-row gap-8 items-start bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-5xl mx-auto w-full mt-10 relative">
+
+      {/* Toast notification */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 px-5 py-3 bg-gray-900 text-white rounded-2xl shadow-xl text-sm font-medium animate-bounce">
+          {toast}
+        </div>
+      )}
+
+      {/* LEFT: Cover Image */}
       <div className="w-full md:w-1/3 flex justify-center">
         <div className="relative w-full max-w-[300px] aspect-[2/3] bg-gray-100 rounded-xl overflow-hidden shadow-lg border border-gray-200">
           {book.coverImage ? (
@@ -27,39 +93,48 @@ export default function BookDetails({ book }: BookDetailsProps) {
               alt={book.title}
               fill
               className="object-cover"
+              unoptimized
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400">
-              No Cover Available
+            <div className="w-full h-full flex items-center justify-center text-gray-400 text-5xl">
+              📚
             </div>
           )}
         </div>
       </div>
 
-      {/* RIGHT SIDE: Details */}
+      {/* RIGHT: Details */}
       <div className="w-full md:w-2/3 flex flex-col">
         <div className="flex items-start justify-between gap-4 flex-wrap">
-          <h1 className="text-4xl font-bold text-gray-900 leading-tight">
+          <h1 className="text-4xl font-bold text-gray-900 leading-tight flex-1">
             {book.title}
           </h1>
-          <button className="px-6 py-2 bg-black text-white rounded-full font-medium hover:opacity-80 transition whitespace-nowrap shadow-md">
-            + Add to Favorites
+          {/* ── FAVOURITE BUTTON ── */}
+          <button
+            onClick={handleFavourite}
+            disabled={loading}
+            className={`flex items-center gap-2 px-5 py-2 rounded-full font-semibold text-sm shadow-md transition whitespace-nowrap ${
+              isFav
+                ? "bg-red-500 text-white hover:bg-red-600"
+                : "bg-white border-2 border-gray-200 text-gray-700 hover:border-red-400 hover:text-red-500"
+            }`}
+          >
+            <span className="text-base">{isFav ? "❤️" : "🤍"}</span>
+            {loading ? "Saving..." : isFav ? "Saved to Favourites" : "Add to Favourites"}
           </button>
         </div>
 
         <p className="text-xl text-gray-600 mt-2 font-medium">
-          {book.authors && book.authors.length > 0 ? book.authors.join(", ") : "Unknown Author"}
+          {book.authors?.length > 0 ? book.authors.join(", ") : "Unknown Author"}
         </p>
 
-        <div className="flex items-center gap-4 mt-4 mb-6">
+        <div className="flex items-center gap-4 mt-4 mb-6 flex-wrap">
           <div className="flex items-center gap-1 text-yellow-500 font-semibold text-lg bg-yellow-50 px-3 py-1 rounded-lg">
             <span>★</span>
             <span>{book.averageRating ? book.averageRating.toFixed(1) : "N/A"}</span>
           </div>
           {book.ratingsCount !== undefined && book.ratingsCount > 0 && (
-            <span className="text-gray-500 text-sm">
-              ({book.ratingsCount} reviews)
-            </span>
+            <span className="text-gray-500 text-sm">({book.ratingsCount} reviews)</span>
           )}
           {book.xpValue && (
             <span className="text-green-600 font-bold bg-green-50 px-3 py-1 rounded-lg">
@@ -68,8 +143,9 @@ export default function BookDetails({ book }: BookDetailsProps) {
           )}
         </div>
 
+        {/* Genres */}
         <div className="flex flex-wrap gap-2 mb-6">
-          {book.genres && book.genres.length > 0 ? (
+          {book.genres?.length > 0 ? (
             book.genres.map((genre, idx) => (
               <span key={idx} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-200">
                 {genre}
@@ -82,9 +158,10 @@ export default function BookDetails({ book }: BookDetailsProps) {
           )}
         </div>
 
+        {/* Description */}
         <div>
           <h3 className="text-lg font-bold text-gray-900 mb-2 border-b pb-2">Summary</h3>
-          <div className="text-gray-700 leading-relaxed space-y-4">
+          <div className="text-gray-700 leading-relaxed">
             {book.description ? (
               <p>{book.description}</p>
             ) : (
@@ -92,7 +169,6 @@ export default function BookDetails({ book }: BookDetailsProps) {
             )}
           </div>
         </div>
-
       </div>
     </div>
   );

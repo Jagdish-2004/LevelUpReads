@@ -65,7 +65,6 @@ export default function Header() {
 
         {/* CENTER — NAV */}
         <nav className="hidden md:flex gap-10 text-lg">
-          <Link href="/reader/home" className={isActive('/reader/home')}>Home</Link>
           <Link href="/reader/dashboard" className={isActive('/reader/dashboard')}>Dashboard</Link>
           <Link href="/reader/explore" className={isActive('/reader/explore')}>Explore</Link>
           <Link href="/reader/leaderboard" className={isActive('/reader/leaderboard')}>Leaderboard</Link>
