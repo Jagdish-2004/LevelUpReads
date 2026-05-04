@@ -1,1 +1,0 @@
-chore: production deployment setup - next.config, env.example, server external packages
