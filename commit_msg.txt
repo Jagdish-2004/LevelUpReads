@@ -1,0 +1,1 @@
+Production distributed systems upgrade: circuit breakers, shard router, stateless WebSocket Pub/Sub, BullMQ deduplication, read replicas, composite indexes, Pino logger

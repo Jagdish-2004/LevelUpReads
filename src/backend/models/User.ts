@@ -37,4 +37,13 @@ const UserSchema: Schema = new Schema(
   { timestamps: true }
 );
 
+// Leaderboard sort index — covers the top-N by XP query
+UserSchema.index({ xp: -1 });
+
+// Composite index for email lookups (auth + profile)
+UserSchema.index({ email: 1 }, { unique: true });
+
+// Compound index for role-based leaderboard queries
+UserSchema.index({ role: 1, xp: -1 });
+
 export const User = mongoose.models.User || mongoose.model<IUser>("User", UserSchema);

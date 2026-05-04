@@ -57,4 +57,15 @@ BookSchema.index(
   { weights: { title: 10, authors: 5, description: 1 } }
 );
 
+// Composite index for trending query: sort by rating + ratingsCount
+// Covers: Book.find({}).sort({ averageRating: -1, ratingsCount: -1 })
+BookSchema.index({ averageRating: -1, ratingsCount: -1 });
+
+// Composite index for genre filtering + rating sort
+// Covers: Book.find({ genres: genre }).sort({ averageRating: -1 })
+BookSchema.index({ genres: 1, averageRating: -1 });
+
+// Index for source lookups (used during upsert from Open Library)
+BookSchema.index({ source: 1, sourceId: 1 });
+
 export const Book = mongoose.models.Book || mongoose.model<IBook>("Book", BookSchema);
