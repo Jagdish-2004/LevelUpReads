@@ -1,134 +1,118 @@
-import { Queue, Worker, QueueEvents, Job } from "bullmq";
+import { Queue, QueueEvents, Job } from "bullmq";
 import IORedis from "ioredis";
 import { createContextLogger } from "../lib/logger";
 
 const log = createContextLogger("queue");
 
-// ── Shared Redis connection ───────────────────────────────────────────────────
-const connection = new IORedis(process.env.REDIS_URL || "redis://localhost:6379", {
-  maxRetriesPerRequest: null,
-  enableReadyCheck: false,
-});
+/**
+ * All Queue/Worker objects are lazily initialised behind getter functions.
+ * This prevents BullMQ from opening Redis connections during the
+ * Next.js build phase.
+ */
 
-connection.on("connect", () => log.info("BullMQ Redis connection established"));
-connection.on("error", (err) => log.error({ err }, "BullMQ Redis error"));
+// ── Shared Redis connection (lazy) ────────────────────────────────────────────
+let _connection: IORedis | null = null;
 
-// ── Default job options ──────────────────────────────────────────────────────
+function getConnection(): IORedis {
+  if (_connection) return _connection;
+  _connection = new IORedis(process.env.REDIS_URL || "redis://localhost:6379", {
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
+    lazyConnect: true,
+  });
+  _connection.on("connect", () => log.info("BullMQ Redis connection established"));
+  _connection.on("error", (err) => log.error({ err }, "BullMQ Redis error"));
+  return _connection;
+}
+
+// ── Default job options ───────────────────────────────────────────────────────
 const defaultJobOptions = {
-  removeOnComplete: { count: 100 },   // Keep last 100 completed jobs for debugging
+  removeOnComplete: { count: 100 },
   removeOnFail: { count: 200 },
   attempts: 3,
   backoff: { type: "exponential" as const, delay: 2000 },
 };
 
-// ── Queues ───────────────────────────────────────────────────────────────────
-export const bookQueue = new Queue("book-ingestion", {
-  connection,
-  defaultJobOptions,
-});
+// ── Lazy Queue singletons ─────────────────────────────────────────────────────
+let _bookQueue: Queue | null = null;
+let _reviewQueue: Queue | null = null;
+let _rewardQueue: Queue | null = null;
+let _favouriteSyncQueue: Queue | null = null;
 
-export const reviewQueue = new Queue("review-processing", {
-  connection,
-  defaultJobOptions,
-});
+export function getBookQueue(): Queue {
+  if (!_bookQueue) _bookQueue = new Queue("book-ingestion", { connection: getConnection(), defaultJobOptions });
+  return _bookQueue;
+}
 
-export const rewardQueue = new Queue("reward-fanout", {
-  connection,
-  defaultJobOptions: {
-    ...defaultJobOptions,
-    /**
-     * Deduplication for high-fanout reward events.
-     * BullMQ's `jobId` acts as a natural deduplication key —
-     * if a job with the same jobId already exists in the queue,
-     * the new add() call is silently ignored.
-     *
-     * Use: addRewardJob("user_abc", { xp: 20 }) → jobId = "reward:user_abc"
-     * A second call with the same userId won't create a duplicate.
-     */
-  },
-});
+export function getReviewQueue(): Queue {
+  if (!_reviewQueue) _reviewQueue = new Queue("review-processing", { connection: getConnection(), defaultJobOptions });
+  return _reviewQueue;
+}
 
-// ── Queue events ─────────────────────────────────────────────────────────────
-export const bookQueueEvents = new QueueEvents("book-ingestion", { connection });
-export const reviewQueueEvents = new QueueEvents("review-processing", { connection });
-export const rewardQueueEvents = new QueueEvents("reward-fanout", { connection });
+export function getRewardQueue(): Queue {
+  if (!_rewardQueue) _rewardQueue = new Queue("reward-fanout", { connection: getConnection(), defaultJobOptions });
+  return _rewardQueue;
+}
 
-bookQueueEvents.on("completed", ({ jobId }) =>
-  log.info({ jobId }, "book-ingestion job completed")
-);
-bookQueueEvents.on("failed", ({ jobId, failedReason }) =>
-  log.error({ jobId, failedReason }, "book-ingestion job FAILED")
-);
+export function getFavouriteSyncQueue(): Queue {
+  if (!_favouriteSyncQueue) {
+    _favouriteSyncQueue = new Queue("favourite-sync", {
+      connection: getConnection(),
+      defaultJobOptions: {
+        removeOnComplete: { count: 50 },
+        removeOnFail: { count: 100 },
+        attempts: 3,
+        backoff: { type: "exponential" as const, delay: 1000 },
+      },
+    });
+  }
+  return _favouriteSyncQueue;
+}
 
-rewardQueueEvents.on("failed", ({ jobId, failedReason }) =>
-  log.error({ jobId, failedReason }, "reward-fanout job FAILED")
-);
+// ── Keep backward-compatible named exports ────────────────────────────────────
+export const bookQueue = new Proxy({} as Queue, { get: (_, p) => (getBookQueue() as any)[p] });
+export const reviewQueue = new Proxy({} as Queue, { get: (_, p) => (getReviewQueue() as any)[p] });
+export const rewardQueue = new Proxy({} as Queue, { get: (_, p) => (getRewardQueue() as any)[p] });
+export const favouriteSyncQueue = new Proxy({} as Queue, { get: (_, p) => (getFavouriteSyncQueue() as any)[p] });
+
+// redisConnection export for workers
+export function redisConnection(): IORedis {
+  return getConnection();
+}
 
 /**
  * Add a deduplicated reward job.
- * Using the userId as the jobId ensures that if a global reward update
- * is triggered multiple times (high fan-out), only one job runs per user.
- *
- * @param userId The user receiving the reward
- * @param data   The job payload
  */
 export async function addRewardJob(userId: string, data: Record<string, unknown>) {
   const jobId = `reward:${userId}`;
-  const existing = await rewardQueue.getJob(jobId);
+  const queue = getRewardQueue();
+  const existing = await queue.getJob(jobId);
 
   if (existing && (await existing.isActive())) {
     log.warn({ jobId }, "Reward job already active — skipping duplicate");
     return null;
   }
 
-  return rewardQueue.add("process-reward", data, {
-    jobId,           // deterministic ID = deduplication key
-    ...defaultJobOptions,
-  });
+  return queue.add("process-reward", data, { jobId, ...defaultJobOptions });
 }
-
-export { connection as redisConnection };
-
-// ── Favourite sync queue (write-back / write-behind) ─────────────────────────
-export const favouriteSyncQueue = new Queue("favourite-sync", {
-  connection,
-  defaultJobOptions: {
-    removeOnComplete: { count: 50 },
-    removeOnFail: { count: 100 },
-    attempts: 3,
-    backoff: { type: "exponential" as const, delay: 1000 },
-  },
-});
 
 /**
  * Queue a write-back DB sync for a user's favourites.
- *
- * Uses a deterministic jobId = "fsync:{userId}" so that rapid
- * add/remove clicks collapse into a single DB write.
- * The 3-second delay lets the user finish interacting before we write.
- *
- * @param userId  user email
- * @param bookIds current favourite bookIds (already written to Redis)
+ * Deduplicated per userId with a 3s write-behind delay.
  */
 export async function addFavouriteSyncJob(userId: string, bookIds: string[]): Promise<void> {
   const jobId = `fsync:${userId}`;
+  const queue = getFavouriteSyncQueue();
+
   try {
-    // Remove any existing pending/delayed sync so we only keep the latest snapshot
-    const existing = await favouriteSyncQueue.getJob(jobId);
+    const existing = await queue.getJob(jobId);
     if (existing) {
       const state = await existing.getState();
-      if (state === "delayed" || state === "waiting") {
-        await existing.remove();
-      }
+      if (state === "delayed" || state === "waiting") await existing.remove();
     }
-    await favouriteSyncQueue.add(
-      "sync-favourites",
-      { userId, bookIds },
-      { jobId, delay: 3000 } // 3 s write-behind window
-    );
+    await queue.add("sync-favourites", { userId, bookIds }, { jobId, delay: 3000 });
     log.debug({ jobId, count: bookIds.length }, "Favourite sync job queued");
   } catch (err) {
     log.error({ err, userId }, "Failed to queue favourite sync job");
   }
 }
-

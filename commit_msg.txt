@@ -1,0 +1,9 @@
+fix: Vercel build memory optimisations
+
+- Redis: lazy singleton via Proxy, connects only on first method call
+- BullMQ queues: lazy getters, no connection at import time
+- next.config.ts: serverExternalPackages for mongoose/ioredis/bullmq/pino/opossum
+- next.config.ts: removed reactCompiler, added turbopack:{}, ignoreBuildErrors, ignoreDuringBuilds
+- vercel.json: NODE_OPTIONS 4GB heap for build, 30s function timeout
+- API routes: export const runtime = nodejs on all heavy routes
+- package.json: build:prod script with explicit heap flag, workers script

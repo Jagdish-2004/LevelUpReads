@@ -42,8 +42,8 @@ const favouriteWorker = new Worker<SyncPayload>(
     reqLog.info("Favourite DB sync complete");
   },
   {
-    connection: redisConnection,
-    concurrency: 10, // handle up to 10 users simultaneously
+    connection: redisConnection(),
+    concurrency: 10,
   }
 );
 

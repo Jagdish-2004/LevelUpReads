@@ -1,0 +1,11 @@
+{
+  "buildCommand": "NODE_OPTIONS='--max_old_space_size=4096' next build",
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "regions": ["bom1"],
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  }
+}

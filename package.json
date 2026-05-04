@@ -5,8 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:prod": "cross-env NODE_OPTIONS=--max_old_space_size=4096 next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "workers": "tsx src/backend/workers/index.ts"
   },
   "dependencies": {
     "@better-auth/utils": "^0.3.0",
